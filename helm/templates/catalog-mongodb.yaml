@@ -1,0 +1,53 @@
+# catalog-mongodb.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-catalog-mongodb
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-mongodb
+  template:
+    metadata:
+      labels:
+        app: catalog-mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: "{{ .Values.mongodb.catalog.image.repository }}:{{ .Values.mongodb.catalog.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.mongodb.catalog.service.port }}
+          volumeMounts:
+            - name: mongodb-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongodb-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-catalog-mongodb-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-catalog-mongodb
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: {{ .Values.mongodb.catalog.service.type }}
+  ports:
+    - port: {{ .Values.mongodb.catalog.service.port }}
+      targetPort: {{ .Values.mongodb.catalog.service.port }}
+  selector:
+    app: catalog-mongodb
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-catalog-mongodb-pvc
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.mongodb.catalog.persistence.size }}

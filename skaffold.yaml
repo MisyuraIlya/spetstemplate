@@ -1,0 +1,82 @@
+apiVersion: skaffold/v2beta26
+kind: Config
+metadata:
+  name: dev-environment
+build:
+  artifacts:
+    - image: spetsar/spetstemplate-auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+    - image: spetsar/spetstemplate-catalog
+      context: catalog
+      docker:
+        dockerfile: Dockerfile
+    - image: spetsar/spetstemplate-orders
+      context: orders
+      docker:
+        dockerfile: Dockerfile
+    - image: spetsar/spetstemplate-prices
+      context: prices
+      docker:
+        dockerfile: Dockerfile
+
+deploy:
+  helm:
+    releases:
+      - name: app
+        chartPath: helm
+        valuesFiles:
+          - helm/values.yaml
+        setValues:
+          auth.image.repository: spetsar/spetstemplate-auth
+          auth.image.tag: dev
+          catalog.image.repository: spetsar/spetstemplate-catalog
+          catalog.image.tag: dev
+          orders.image.repository: spetsar/spetstemplate-orders
+          orders.image.tag: dev
+          prices.image.repository: spetsar/spetstemplate-prices
+          prices.image.tag: dev
+          mongodb.auth.image.repository: mongo
+          mongodb.auth.image.tag: "4.4.6"
+          mongodb.catalog.image.repository: mongo
+          mongodb.catalog.image.tag: "4.4.6"
+          mongodb.orders.image.repository: mongo
+          mongodb.orders.image.tag: "4.4.6"
+          mongodb.prices.image.repository: mongo
+          mongodb.prices.image.tag: "4.4.6"
+          ingress.enabled: true
+
+portForward:
+  - resourceType: service
+    resourceName: app-auth
+    port: 3000
+    localPort: 3001
+  - resourceType: service
+    resourceName: app-catalog
+    port: 3000
+    localPort: 3002
+  - resourceType: service
+    resourceName: app-orders
+    port: 3000
+    localPort: 3003
+  - resourceType: service
+    resourceName: app-prices
+    port: 3000
+    localPort: 3004
+  - resourceType: service
+    resourceName: app-auth-mongodb
+    port: 27017
+    localPort: 27018
+  - resourceType: service
+    resourceName: app-catalog-mongodb
+    port: 27017
+    localPort: 27019
+  - resourceType: service
+    resourceName: app-orders-mongodb
+    port: 27017
+    localPort: 27020
+  - resourceType: service
+    resourceName: app-prices-mongodb
+    port: 27017
+    localPort: 27021

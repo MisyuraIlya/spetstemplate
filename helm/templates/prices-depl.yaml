@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-prices
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.prices.replicaCount }}
+  selector:
+    matchLabels:
+      app: prices
+  template:
+    metadata:
+      labels:
+        app: prices
+    spec:
+      containers:
+        - name: prices
+          image: "{{ .Values.prices.image.repository }}:{{ .Values.prices.image.tag }}"
+          env:
+            - name: MONGODB_URI
+              value: "{{ .Values.prices.env.MONGODB_URI }}"
+          ports:
+            - containerPort: {{ .Values.prices.service.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-prices
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: {{ .Values.prices.service.type }}
+  ports:
+    - port: {{ .Values.prices.service.port }}
+      targetPort: {{ .Values.prices.service.port }}
+  selector:
+    app: prices

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-prices-mongodb
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prices-mongodb
+  template:
+    metadata:
+      labels:
+        app: prices-mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: "{{ .Values.mongodb.prices.image.repository }}:{{ .Values.mongodb.prices.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.mongodb.prices.service.port }}
+          volumeMounts:
+            - name: mongodb-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongodb-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-prices-mongodb-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-prices-mongodb
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: {{ .Values.mongodb.prices.service.type }}
+  ports:
+    - port: {{ .Values.mongodb.prices.service.port }}
+      targetPort: {{ .Values.mongodb.prices.service.port }}
+  selector:
+    app: prices-mongodb
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-prices-mongodb-pvc
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.mongodb.prices.persistence.size }}

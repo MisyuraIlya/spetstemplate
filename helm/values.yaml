@@ -1,0 +1,119 @@
+# NATS configuration
+nats:
+  image: nats
+  tag: latest
+  service:
+    type: ClusterIP
+    port: 4222
+
+# auth service configuration
+auth:
+  image:
+    repository: spetsar/spetstemplate-auth
+    tag: latest
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  env:
+    NATS_URL: "nats://app-nats:4222"
+
+# MongoDB configuration for each service
+mongodb:
+  auth:
+    image:
+      repository: mongo
+      tag: "4.4.6"
+    service:
+      type: ClusterIP
+      port: 27017
+    persistence:
+      enabled: true
+      size: 1Gi
+    database: authdb
+
+  catalog:
+    image:
+      repository: mongo
+      tag: "4.4.6"
+    service:
+      type: ClusterIP
+      port: 27017
+    persistence:
+      enabled: true
+      size: 1Gi
+    database: catalogdb
+
+  orders:
+    image:
+      repository: mongo
+      tag: "4.4.6"
+    service:
+      type: ClusterIP
+      port: 27017
+    persistence:
+      enabled: true
+      size: 1Gi
+    database: ordersdb
+
+  prices:
+    image:
+      repository: mongo
+      tag: "4.4.6"
+    service:
+      type: ClusterIP
+      port: 27017
+    persistence:
+      enabled: true
+      size: 1Gi
+    database: pricesdb
+
+# catalog service configuration
+catalog:
+  image:
+    repository: spetsar/spetstemplate-catalog
+    tag: latest
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  env:
+    MONGODB_URI: "mongodb://{{ .Release.Name }}-catalog-mongodb:27017/catalogdb"
+
+# orders service configuration
+orders:
+  image:
+    repository: spetsar/spetstemplate-orders
+    tag: latest
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  env:
+    MONGODB_URI: "mongodb://{{ .Release.Name }}-orders-mongodb:27017/ordersdb"
+
+# prices service configuration
+prices:
+  image:
+    repository: spetsar/spetstemplate-prices
+    tag: latest
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  env:
+    MONGODB_URI: "mongodb://{{ .Release.Name }}-prices-mongodb:27017/pricesdb"
+
+# Ingress configuration
+ingress:
+  enabled: true
+  host: myapp.local  
+  paths:
+    auth: /api/auth
+    catalog: /api/catalog
+    orders: /api/orders
+    prices: /api/prices
