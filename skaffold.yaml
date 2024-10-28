@@ -47,36 +47,36 @@ deploy:
           mongodb.prices.image.tag: "4.4.6"
           ingress.enabled: true
 
-portForward:
-  - resourceType: service
-    resourceName: app-auth
-    port: 3000
-    localPort: 3001
-  - resourceType: service
-    resourceName: app-catalog
-    port: 3000
-    localPort: 3002
-  - resourceType: service
-    resourceName: app-orders
-    port: 3000
-    localPort: 3003
-  - resourceType: service
-    resourceName: app-prices
-    port: 3000
-    localPort: 3004
-  - resourceType: service
-    resourceName: app-auth-mongodb
-    port: 27017
-    localPort: 27018
-  - resourceType: service
-    resourceName: app-catalog-mongodb
-    port: 27017
-    localPort: 27019
-  - resourceType: service
-    resourceName: app-orders-mongodb
-    port: 27017
-    localPort: 27020
-  - resourceType: service
-    resourceName: app-prices-mongodb
-    port: 27017
-    localPort: 27021
+# portForward:
+#   - resourceType: service
+#     resourceName: app-auth
+#     port: 3000
+#     localPort: 3001
+#   - resourceType: service
+#     resourceName: app-catalog
+#     port: 3000
+#     localPort: 3002
+#   - resourceType: service
+#     resourceName: app-orders
+#     port: 3000
+#     localPort: 3003
+#   - resourceType: service
+#     resourceName: app-prices
+#     port: 3000
+#     localPort: 3004
+#   - resourceType: service
+#     resourceName: app-auth-mongodb
+#     port: 27017
+#     localPort: 27018
+#   - resourceType: service
+#     resourceName: app-catalog-mongodb
+#     port: 27017
+#     localPort: 27019
+#   - resourceType: service
+#     resourceName: app-orders-mongodb
+#     port: 27017
+#     localPort: 27020
+#   - resourceType: service
+#     resourceName: app-prices-mongodb
+#     port: 27017
+#     localPort: 27021

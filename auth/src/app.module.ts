@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MongooseProvider } from './mongoose.provider';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UserModule } from './user/user.module';
     ]),
     MongooseProvider,
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
