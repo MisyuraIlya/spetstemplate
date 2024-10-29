@@ -20,6 +20,10 @@ build:
       context: prices
       docker:
         dockerfile: Dockerfile
+    - image: spetsar/spetstemplate-admin
+      context: admin
+      docker:
+        dockerfile: Dockerfile
 
 deploy:
   helm:
@@ -37,6 +41,8 @@ deploy:
           orders.image.tag: dev
           prices.image.repository: spetsar/spetstemplate-prices
           prices.image.tag: dev
+          admin.image.repository: spetsar/spetstemplate-admin
+          admin.image.tag: dev
           mongodb.auth.image.repository: mongo
           mongodb.auth.image.tag: "4.4.6"
           mongodb.catalog.image.repository: mongo
@@ -47,6 +53,7 @@ deploy:
           mongodb.prices.image.tag: "4.4.6"
           ingress.enabled: true
 
+# Uncomment and add port forwarding for the admin service if required
 # portForward:
 #   - resourceType: service
 #     resourceName: app-auth
@@ -64,6 +71,10 @@ deploy:
 #     resourceName: app-prices
 #     port: 3000
 #     localPort: 3004
+#   - resourceType: service
+#     resourceName: app-admin
+#     port: 3000
+#     localPort: 3005
 #   - resourceType: service
 #     resourceName: app-auth-mongodb
 #     port: 27017

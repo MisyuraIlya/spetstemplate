@@ -10,7 +10,7 @@ nats:
 auth:
   image:
     repository: spetsar/spetstemplate-auth
-    tag: latest
+  tag: latest
   replicaCount: 1
   service:
     type: ClusterIP
@@ -109,10 +109,22 @@ prices:
   env:
     MONGODB_URI: "mongodb://{{ .Release.Name }}-prices-mongodb:27017/pricesdb"
 
+# React Admin service configuration
+admin:
+  image:
+    repository: spetsar/spetstemplate-admin
+    tag: latest
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 5173
+    targetPort: 5173
+
 # Ingress configuration
 ingress:
   enabled: true
   host: myapp.local  
+  adminHost: admin.myapp.local
   paths:
     auth: /api/auth
     catalog: /api/catalog

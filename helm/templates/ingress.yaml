@@ -5,9 +5,13 @@ metadata:
   name: {{ .Release.Name }}-ingress
   namespace: {{ .Release.Namespace }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/add-base-url: "/"
+    nginx.ingress.kubernetes.io/use-http2: "true"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
 spec:
   rules:
+    # Main application host
     - host: {{ .Values.ingress.host }}
       http:
         paths:
@@ -39,4 +43,16 @@ spec:
                 name: {{ .Release.Name }}-prices
                 port:
                   number: {{ .Values.prices.service.port }}
+
+    # Separate host for the admin subdomain
+    - host: {{ .Values.ingress.adminHost }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-admin
+                port:
+                  number: {{ .Values.admin.service.port }}
 {{- end }}
