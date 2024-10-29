@@ -1,11 +1,12 @@
-import { Controller, Post, Body, UseGuards, Request, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Response, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtService } from '@nestjs/jwt';
 
-
-@Controller('test')
+@Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+  ) {}
 
   @Post('register')
   async register(@Body('email') email: string, @Body('password') password: string, @Body('name') name: string) {
@@ -13,15 +14,24 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body('email') email: string, @Body('password') password: string) {
+  async login(
+    @Body('email') email: string,
+    @Body('password') password: string,
+    @Response() res: any,
+  ) {
     const user = await this.authService.validateUser(email, password);
     if (!user) throw new UnauthorizedException('Invalid credentials');
-    return this.authService.login(user);
+    const token = await this.authService.login(user);
+    res.cookie('jwt', token.access_token, { httpOnly: true });
+    return res.status(200).json({
+      message: 'Login successful',
+      user: token.user,
+    });
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('logout')
-  async logout(@Request() req) {
-    return { message: 'Logged out successfully' };
+  async logout(@Response() res: any) {
+    res.clearCookie('jwt');
+    return res.status(200).json({ message: 'Logout successful' });
   }
 }

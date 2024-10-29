@@ -21,6 +21,8 @@ spec:
               value: "{{ .Values.auth.env.NATS_URL }}"
             - name: MONGODB_URI
               value: "mongodb://{{ .Release.Name }}-auth-mongodb:{{ .Values.mongodb.auth.service.port }}/{{ .Values.mongodb.auth.database }}"
+            - name: JWT_SECRET  
+              value: "{{ .Values.auth.env.JWT_SECRET }}" 
           ports:
             - containerPort: {{ .Values.auth.service.port }}
 ---

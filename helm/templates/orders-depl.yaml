@@ -1,36 +1,36 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {{ .Release.Name }}-orders
-  namespace: {{ .Release.Namespace }}
-spec:
-  replicas: {{ .Values.orders.replicaCount }}
-  selector:
-    matchLabels:
-      app: orders
-  template:
-    metadata:
-      labels:
-        app: orders
-    spec:
-      containers:
-        - name: orders
-          image: "{{ .Values.orders.image.repository }}:{{ .Values.orders.image.tag }}"
-          env:
-            - name: MONGODB_URI
-              value: "{{ .Values.orders.env.MONGODB_URI }}"
-          ports:
-            - containerPort: {{ .Values.orders.service.port }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-orders
-  namespace: {{ .Release.Namespace }}
-spec:
-  type: {{ .Values.orders.service.type }}
-  ports:
-    - port: {{ .Values.orders.service.port }}
-      targetPort: {{ .Values.orders.service.port }}
-  selector:
-    app: orders
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: {{ .Release.Name }}-orders
+#   namespace: {{ .Release.Namespace }}
+# spec:
+#   replicas: {{ .Values.orders.replicaCount }}
+#   selector:
+#     matchLabels:
+#       app: orders
+#   template:
+#     metadata:
+#       labels:
+#         app: orders
+#     spec:
+#       containers:
+#         - name: orders
+#           image: "{{ .Values.orders.image.repository }}:{{ .Values.orders.image.tag }}"
+#           env:
+#             - name: MONGODB_URI
+#               value: "{{ .Values.orders.env.MONGODB_URI }}"
+#           ports:
+#             - containerPort: {{ .Values.orders.service.port }}
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: {{ .Release.Name }}-orders
+#   namespace: {{ .Release.Namespace }}
+# spec:
+#   type: {{ .Values.orders.service.type }}
+#   ports:
+#     - port: {{ .Values.orders.service.port }}
+#       targetPort: {{ .Values.orders.service.port }}
+#   selector:
+#     app: orders

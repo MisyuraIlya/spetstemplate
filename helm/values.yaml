@@ -18,6 +18,7 @@ auth:
     targetPort: 3000
   env:
     NATS_URL: "nats://app-nats:4222"
+    JWT_SECRET: "$spetsar$"
 
 # MongoDB configuration for each service
 mongodb:

@@ -1,37 +1,37 @@
-# catalog-depl.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {{ .Release.Name }}-catalog
-  namespace: {{ .Release.Namespace }}
-spec:
-  replicas: {{ .Values.catalog.replicaCount }}
-  selector:
-    matchLabels:
-      app: catalog
-  template:
-    metadata:
-      labels:
-        app: catalog
-    spec:
-      containers:
-        - name: catalog
-          image: "{{ .Values.catalog.image.repository }}:{{ .Values.catalog.image.tag }}"
-          env:
-            - name: MONGODB_URI
-              value: "{{ .Values.catalog.env.MONGODB_URI }}"
-          ports:
-            - containerPort: {{ .Values.catalog.service.port }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-catalog
-  namespace: {{ .Release.Namespace }}
-spec:
-  type: {{ .Values.catalog.service.type }}
-  ports:
-    - port: {{ .Values.catalog.service.port }}
-      targetPort: {{ .Values.catalog.service.port }}
-  selector:
-    app: catalog
+# # catalog-depl.yaml
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: {{ .Release.Name }}-catalog
+#   namespace: {{ .Release.Namespace }}
+# spec:
+#   replicas: {{ .Values.catalog.replicaCount }}
+#   selector:
+#     matchLabels:
+#       app: catalog
+#   template:
+#     metadata:
+#       labels:
+#         app: catalog
+#     spec:
+#       containers:
+#         - name: catalog
+#           image: "{{ .Values.catalog.image.repository }}:{{ .Values.catalog.image.tag }}"
+#           env:
+#             - name: MONGODB_URI
+#               value: "{{ .Values.catalog.env.MONGODB_URI }}"
+#           ports:
+#             - containerPort: {{ .Values.catalog.service.port }}
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: {{ .Release.Name }}-catalog
+#   namespace: {{ .Release.Namespace }}
+# spec:
+#   type: {{ .Values.catalog.service.type }}
+#   ports:
+#     - port: {{ .Values.catalog.service.port }}
+#       targetPort: {{ .Values.catalog.service.port }}
+#   selector:
+#     app: catalog
