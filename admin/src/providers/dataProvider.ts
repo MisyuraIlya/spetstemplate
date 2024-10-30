@@ -1,7 +1,7 @@
 import { DataProvider, fetchUtils, Identifier, RaRecord } from 'react-admin';
 import { stringify } from 'query-string';
 
-const apiUrl = '/api/auth'; // Base URL for your API
+const apiUrl = '/api/catalog'; // Base URL for your API
 const httpClient = fetchUtils.fetchJson;
 
 const dataProvider: DataProvider = {
