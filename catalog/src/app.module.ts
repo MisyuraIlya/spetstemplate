@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MongooseProvider } from './mongoose.provider';
+import { CategoryModule } from './category/category.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { MongooseProvider } from './mongoose.provider';
       },
     ]),
     MongooseProvider,
+    CategoryModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

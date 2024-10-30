@@ -2,7 +2,7 @@ import { Controller, Post, Body, Response, UnauthorizedException } from '@nestjs
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 
-@Controller('auth')
+@Controller('api/auth/auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,

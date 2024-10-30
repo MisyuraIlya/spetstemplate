@@ -9,7 +9,6 @@ import * as bcrypt from 'bcryptjs';
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
-  
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     const { email, password, name } = createUserDto;
@@ -23,10 +22,24 @@ export class UserService {
     const user = new this.userModel({ email, password: hashedPassword, name });
     return user.save();
   }
-  
 
-  async findAllUsers(): Promise<User[]> {
-    return this.userModel.find().exec();
+  async findAllUsers(page: number, perPage: number, sort: string, order: string): Promise<{ data: User[]; total: number }> {
+    const skip = (page - 1) * perPage;
+    const sortOrder = order === 'asc' ? 1 : -1;
+
+    const [data, total] = await Promise.all([
+      this.userModel
+        .find()
+        .sort({ [sort]: sortOrder })
+        .skip(skip)
+        .limit(perPage)
+        .exec(),
+      this.userModel.countDocuments().exec(),
+    ]);
+
+    // Convert _id to id for React Admin compatibility
+    const dataWithId = data.map(user => ({ ...user.toObject(), id: user._id })) as User[];
+    return { data: dataWithId, total };
   }
 
   async findOneUser(id: string): Promise<User> {
@@ -55,5 +68,4 @@ export class UserService {
   async findByEmail(email: string): Promise<User | undefined> {
     return this.userModel.findOne({ email });
   }
-
 }

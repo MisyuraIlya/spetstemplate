@@ -1,18 +1,21 @@
-# Use the latest Node.js image
-FROM node:20
+# Use latest Node.js image as base
+FROM node:latest
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Install dependencies
-COPY package.json package-lock.json ./
-RUN npm install
+# Install dependencies in a separate layer
+COPY package.json package-lock.json* ./ 
+RUN npm install --force
 
-# Copy all source files
+# Copy all files to the working directory
 COPY . .
 
-# Expose the port the app runs on (typically 3000 for development)
-EXPOSE 5173
+# Expose Next.js default port
+EXPOSE 3000
 
-# Start the app in development mode
+# Set environment to development
+ENV NODE_ENV=development
+
+# Start Next.js in development mode
 CMD ["npm", "run", "dev"]

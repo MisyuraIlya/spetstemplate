@@ -2,56 +2,63 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-service
+  name: {{ .Release.Name }}-ingress
   namespace: {{ .Release.Namespace }}
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-http2: "true"
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/use-regex: 'true'
 spec:
   rules:
+    # Main application host with a specific rewrite rule for services
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: /api/auth/?(.*)
-            pathType: ImplementationSpecific
+          - path: /api/auth(/|$)(.*)
+            pathType: Prefix
             backend:
               service:
                 name: {{ .Release.Name }}-auth
                 port:
                   number: {{ .Values.auth.service.port }}
-          
-          - path: /api/catalog/?(.*)
-            pathType: ImplementationSpecific
+            nginx.ingress.kubernetes.io/rewrite-target: /$2  # Applies only to auth paths
+
+          - path: /api/catalog(/|$)(.*)
+            pathType: Prefix
             backend:
               service:
                 name: {{ .Release.Name }}-catalog
                 port:
                   number: {{ .Values.catalog.service.port }}
-          
-          - path: /api/orders/?(.*)
-            pathType: ImplementationSpecific
+            nginx.ingress.kubernetes.io/rewrite-target: /$2  # Applies only to catalog paths
+
+          - path: /api/orders(/|$)(.*)
+            pathType: Prefix
             backend:
               service:
                 name: {{ .Release.Name }}-orders
                 port:
                   number: {{ .Values.orders.service.port }}
-          
-          - path: /api/prices/?(.*)
-            pathType: ImplementationSpecific
+            nginx.ingress.kubernetes.io/rewrite-target: /$2  # Applies only to orders paths
+
+          - path: /api/prices(/|$)(.*)
+            pathType: Prefix
             backend:
               service:
                 name: {{ .Release.Name }}-prices
                 port:
                   number: {{ .Values.prices.service.port }}
-          
-          # Root path for the admin service
-          - path: /?(.*)
-            pathType: ImplementationSpecific
+            nginx.ingress.kubernetes.io/rewrite-target: /$2  # Applies only to prices paths
+
+    # Separate host for the admin subdomain with its own rewrite rule
+    - host: {{ .Values.ingress.adminHost }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
             backend:
               service:
                 name: {{ .Release.Name }}-admin
                 port:
                   number: {{ .Values.admin.service.port }}
+            nginx.ingress.kubernetes.io/rewrite-target: "/$2"  # Applies only to admin
 {{- end }}

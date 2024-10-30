@@ -81,7 +81,8 @@ catalog:
     port: 3000
     targetPort: 3000
   env:
-    MONGODB_URI: "mongodb://{{ .Release.Name }}-catalog-mongodb:27017/catalogdb"
+    NATS_URL: "nats://app-nats:4222"
+    JWT_SECRET: "$spetsar$"
 
 # orders service configuration
 orders:
@@ -117,8 +118,8 @@ admin:
   replicaCount: 1
   service:
     type: ClusterIP
-    port: 5173
-    targetPort: 5173
+    port: 3000
+    targetPort: 3000
 
 # Ingress configuration
 ingress:
