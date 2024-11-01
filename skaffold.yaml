@@ -20,10 +20,10 @@ build:
       context: prices
       docker:
         dockerfile: Dockerfile
-    - image: spetsar/spetstemplate-admin
-      context: admin
-      docker:
-        dockerfile: Dockerfile
+    # - image: spetsar/spetstemplate-admin
+    #   context: admin
+    #   docker:
+    #     dockerfile: Dockerfile
 
 deploy:
   helm:
@@ -41,8 +41,8 @@ deploy:
           orders.image.tag: dev
           prices.image.repository: spetsar/spetstemplate-prices
           prices.image.tag: dev
-          admin.image.repository: spetsar/spetstemplate-admin
-          admin.image.tag: dev
+          # admin.image.repository: spetsar/spetstemplate-admin
+          # admin.image.tag: dev
           mongodb.auth.image.repository: mongo
           mongodb.auth.image.tag: "4.4.6"
           mongodb.catalog.image.repository: mongo

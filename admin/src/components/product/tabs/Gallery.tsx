@@ -1,31 +1,31 @@
-import {List, ResourceContextProvider, useEditContext, TextField, WithRecord, Datagrid} from 'react-admin';
-import { DrawerButton,Types } from '../../../utils/drawer/ DrawerButton';
-import CreateChild from './CreateChild';
-import EditChild from './EditChild';
+import {List, ResourceContextProvider, WithRecord, useEditContext, BooleanField, Datagrid} from 'react-admin';
+import { DrawerButton, Types } from '../../../utils/drawer/ DrawerButton';
+import { ImageField } from '../../../utils/imageField';
+import Create from './gallery/Create';
+import Edit from './gallery/Edit';
 
-export default function ChildrenList () {
+export const Gallery = () => {
   const {record, isLoading} = useEditContext();
-  console.log('record',record)
-  return(
-    <ResourceContextProvider>
+  return (
+    <ResourceContextProvider value="product_images">
       <>
         <DrawerButton type={Types.Create} width="550px">
-          <CreateChild />
+          <Create/>
         </DrawerButton>
         <List
           actions={false}
           pagination={false}
-          empty={false}
           title="/"
-          filter={{parent: record.id}}
+          filter={{product: record.id}}
           sort={{field: 'position', order: 'ASC'}}
           perPage={100}
         >
           <Datagrid>
-            <TextField source="title"/>
+            <ImageField/>
+            <BooleanField source="defaultImage" />
             <WithRecord label="Edit" render={rowRecord => (
               <DrawerButton type={Types.Edit} width="550px">
-                <EditChild itemId={rowRecord.id} />
+                <Edit itemId={rowRecord.id} />
               </DrawerButton>
             )}
             />
@@ -33,5 +33,6 @@ export default function ChildrenList () {
         </List>
       </>
     </ResourceContextProvider>
+
   )
 }

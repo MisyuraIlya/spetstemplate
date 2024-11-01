@@ -1,5 +1,5 @@
 import {required, ResourceContextProvider, TextInput, useEditContext} from 'react-admin';
-import { EditDrawerWrapper } from '@/utils/drawer/ EditDrawerWrapper';
+import { EditDrawerWrapper } from '../../../utils/drawer/ EditDrawerWrapper';
 
 // @ts-ignore
 export default function EditChild({itemId}) {

@@ -1,6 +1,5 @@
 import {required, ResourceContextProvider, TextInput, useEditContext} from 'react-admin';
-import { CreateDrawerWrapper } from '@/utils/drawer/CreateDrawerWrapper';
-
+import { CreateDrawerWrapper } from '../../../utils/drawer/CreateDrawerWrapper';
 export default function CreateChild() {
   const { record, isLoading } = useEditContext();
   return(

@@ -10,18 +10,26 @@ export class CategoryService {
   constructor(@InjectModel(Category.name) private categoryModel: Model<Category>) {}
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    const { title } = createCategoryDto;
-
-    // Check if category already exists
+    const { title, parent } = createCategoryDto;
     const existCategory = await this.categoryModel.findOne({ title });
     if (existCategory) {
       throw new BadRequestException('Category already exists');
     }
-
+    if (parent) {
+      const parentCategory = await this.categoryModel.findById(parent);
+      if (!parentCategory) {
+        throw new BadRequestException('Parent category does not exist');
+      }
+    }
     const category = new this.categoryModel(createCategoryDto);
-    
     try {
-      return await category.save();
+      const savedCategory = await category.save();
+      if (parent) {
+        await this.categoryModel.findByIdAndUpdate(parent, {
+          $push: { children: savedCategory._id },
+        });
+      }
+      return savedCategory;
     } catch (error) {
       throw new InternalServerErrorException('Failed to create category');
     }
@@ -38,6 +46,10 @@ export class CategoryService {
           .sort({ [sort]: sortOrder })
           .skip(skip)
           .limit(perPage)
+          .populate({
+            path: 'children',
+            model: 'Category', // Ensure the model name matches your Category schema
+          })
           .exec(),
         this.categoryModel.countDocuments().exec(),
       ]);
@@ -51,7 +63,11 @@ export class CategoryService {
   async findOne(id: string): Promise<Category> {
     this.validateObjectId(id, 'Category ID');
 
-    const category = await this.categoryModel.findById(id).exec();
+    const category = await this.categoryModel.findById(id).populate({
+      path: 'children',
+      model: 'Category', // Ensure the model name matches your Category schema
+    }).exec();
+
     if (!category) {
       throw new NotFoundException(`Category with ID ${id} not found`);
     }

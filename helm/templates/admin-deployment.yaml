@@ -1,40 +1,40 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {{ .Release.Name }}-admin
-  labels:
-    app: {{ .Release.Name }}-admin
-spec:
-  replicas: {{ .Values.admin.replicaCount }}
-  selector:
-    matchLabels:
-      app: {{ .Release.Name }}-admin
-  template:
-    metadata:
-      labels:
-        app: {{ .Release.Name }}-admin
-    spec:
-      containers:
-        - name: admin
-          image: {{ .Values.admin.image.repository }}:{{ .Values.admin.image.tag }}
-          ports:
-            - containerPort: {{ .Values.admin.service.port }}
-          env:
-            # Add any environment variables if needed for the admin service
-          resources:
-            # Define resources here if required
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-admin
-  labels:
-    app: {{ .Release.Name }}-admin
-spec:
-  type: {{ .Values.admin.service.type }}
-  ports:
-    - port: {{ .Values.admin.service.port }}          # External port 80
-      targetPort: {{ .Values.admin.service.targetPort }} # Map to internal 5173
-  selector:
-    app: {{ .Release.Name }}-admin
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: {{ .Release.Name }}-admin
+#   labels:
+#     app: {{ .Release.Name }}-admin
+# spec:
+#   replicas: {{ .Values.admin.replicaCount }}
+#   selector:
+#     matchLabels:
+#       app: {{ .Release.Name }}-admin
+#   template:
+#     metadata:
+#       labels:
+#         app: {{ .Release.Name }}-admin
+#     spec:
+#       containers:
+#         - name: admin
+#           image: {{ .Values.admin.image.repository }}:{{ .Values.admin.image.tag }}
+#           ports:
+#             - containerPort: {{ .Values.admin.service.port }}
+#           env:
+#             # Add any environment variables if needed for the admin service
+#           resources:
+#             # Define resources here if required
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: {{ .Release.Name }}-admin
+#   labels:
+#     app: {{ .Release.Name }}-admin
+# spec:
+#   type: {{ .Values.admin.service.type }}
+#   ports:
+#     - port: {{ .Values.admin.service.port }}          # External port 80
+#       targetPort: {{ .Values.admin.service.targetPort }} # Map to internal 5173
+#   selector:
+#     app: {{ .Release.Name }}-admin
 

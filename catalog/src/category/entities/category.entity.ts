@@ -18,7 +18,7 @@ export class Category extends Document {
   parent: Types.ObjectId | null;
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Category' }] })
-  children: Types.ObjectId[];
+  children: Category[];
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);
