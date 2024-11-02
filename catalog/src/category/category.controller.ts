@@ -17,9 +17,12 @@ export class CategoryController {
     @Query('page') page: number = 1,
     @Query('perPage') perPage: number = 10,
     @Query('sort') sort: string = 'name',
-    @Query('order') order: string = 'asc'
+    @Query('order') order: string = 'asc',
+    @Query('parentExists') parentExists: string = 'false',
+    @Query('parent') parent: string,
   ) {
-    return this.categoryService.findAll(page, perPage, sort, order);
+    const isParent = parentExists === 'true'; 
+    return this.categoryService.findAll(page, perPage, sort, order, isParent, parent);
   }
 
   @Get(':id')

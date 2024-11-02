@@ -5,7 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Brand, BrandSchema } from './entities/brand.entity';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Brand.name, schema: BrandSchema }])],
+  imports: [
+    MongooseModule.forFeature([{ name: Brand.name, schema: BrandSchema }]),
+  ],
   controllers: [BrandController],
   providers: [BrandService],
 })

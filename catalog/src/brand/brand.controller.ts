@@ -3,7 +3,7 @@ import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 
-@Controller('api/catalog/brand')
+@Controller('api/catalog/brands')
 export class BrandController {
   constructor(private readonly brandService: BrandService) {}
 

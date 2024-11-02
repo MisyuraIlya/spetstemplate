@@ -8,18 +8,24 @@ export default function General() {
   return(
     <>
       <TextInput source="title" validate={required()} fullWidth={true} />
-      <ReferenceInput label="Category" source="category" reference="categories" filter={{'exists[parent]': false}} perPage={100}>
+      <ReferenceInput label="Category" source="category" reference="categories"  perPage={100}>
         <AutocompleteInput
           fullWidth={true}
           filterToQuery={filterToQuery}
-          optionText="name"
+          optionText="title"
           validate={required()}
+        />
+      </ReferenceInput>
+      <ReferenceInput label="Brand" source="brand" reference="brands" perPage={100}>
+        <AutocompleteInput
+          fullWidth={true}
+          filterToQuery={filterToQuery}
+          optionText="title"
         />
       </ReferenceInput>
       <SelectChildCategory />
       <TextInput source="sku" validate={required()} fullWidth={true} />
-      <TextInput source="barcode" validate={required()} fullWidth={true} />
-      <BooleanInput source="hidden" />
+      <BooleanInput source="isPublished" name='isPublished' />
     </>
   )
 }

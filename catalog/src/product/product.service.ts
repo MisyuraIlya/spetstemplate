@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -11,35 +16,61 @@ export class ProductService {
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     this.validateObjectId(createProductDto.category, 'Category ID');
-    
+    if (createProductDto.brand) {
+      this.validateObjectId(createProductDto.brand, 'Brand ID');
+    }
+  
     const newProduct = new this.productModel({
       ...createProductDto,
       category: new Types.ObjectId(createProductDto.category),
+      brand: createProductDto.brand ? new Types.ObjectId(createProductDto.brand) : undefined,
+      isPublished: createProductDto.isPublished ?? false,
+      sku: createProductDto.sku,
     });
-
+  
     try {
       return await newProduct.save();
     } catch (error) {
+      console.error('Error creating product:', error);  // Log detailed error
       throw new InternalServerErrorException('Failed to create product');
     }
   }
 
-  async findAll(page: number, perPage: number, sort: string, order: string): Promise<{ data: Product[]; total: number }> {
+  async findAll(
+    page: number,
+    perPage: number,
+    sort: string,
+    order: string,
+    category: string,
+    childCategory: string
+  ): Promise<{ data: Product[]; total: number }> {
     const skip = (page - 1) * perPage;
     const sortOrder = order === 'asc' ? 1 : -1;
-
+    const filter: Record<string, any> = {};
+  
+    // Add category filter if provided
+    if (category) {
+      filter['category'] = category;
+    }
+  
+    // Add childCategory filter if provided
+    if (childCategory) {
+      filter['childCategory'] = childCategory;
+    }
+  
     try {
       const [data, total] = await Promise.all([
         this.productModel
-          .find()
+          .find(filter)
           .populate('category')
+          .populate('brand')
           .sort({ [sort]: sortOrder })
           .skip(skip)
           .limit(perPage)
           .exec(),
-        this.productModel.countDocuments().exec(),
+        this.productModel.countDocuments(filter).exec(),
       ]);
-
+  
       return { data, total };
     } catch (error) {
       throw new InternalServerErrorException('Failed to retrieve products');
@@ -48,8 +79,12 @@ export class ProductService {
 
   async findOne(id: string): Promise<Product> {
     this.validateObjectId(id, 'Product ID');
-    
-    const product = await this.productModel.findById(id).populate('category').exec();
+
+    const product = await this.productModel
+    .findById(id)
+    // .populate('category')
+    // .populate('brand')
+    .exec();  // Populate brand
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
@@ -59,8 +94,21 @@ export class ProductService {
 
   async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
     this.validateObjectId(id, 'Product ID');
-    
-    const updatedProduct = await this.productModel.findByIdAndUpdate(id, updateProductDto, { new: true }).populate('category').exec();
+    if (updateProductDto.brand) {
+      this.validateObjectId(updateProductDto.brand, 'Brand ID');
+    }
+
+    const updateData = {
+      ...updateProductDto,
+      brand: updateProductDto.brand ? new Types.ObjectId(updateProductDto.brand) : undefined,
+      isPublished: updateProductDto.isPublished,
+      sku: updateProductDto.sku,
+    };
+
+    const updatedProduct = await this.productModel
+      .findByIdAndUpdate(id, updateData, { new: true })
+      .exec();
+
     if (!updatedProduct) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
@@ -70,7 +118,7 @@ export class ProductService {
 
   async remove(id: string): Promise<{ message: string }> {
     this.validateObjectId(id, 'Product ID');
-    
+
     const result = await this.productModel.findByIdAndDelete(id).exec();
     if (!result) {
       throw new NotFoundException(`Product with ID ${id} not found`);

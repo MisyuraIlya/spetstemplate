@@ -13,7 +13,7 @@ export default function ProductFilter() {
     <Card sx={{order: -1, mr: 2, mt: 6, width: 300}}>
       <CardContent>
         <FilterLiveSearch source="title" label="Search by title" fullWidth={true} />
-        <BrandFilter />
+        {/* <BrandFilter /> */}
         <CategoryFilter />
       </CardContent>
     </Card>

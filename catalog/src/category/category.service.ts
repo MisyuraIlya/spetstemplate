@@ -35,30 +35,47 @@ export class CategoryService {
     }
   }
 
-  async findAll(page: number, perPage: number, sort: string, order: string): Promise<{ data: Category[]; total: number }> {
+  async findAll(
+    page: number,
+    perPage: number,
+    sort: string,
+    order: string,
+    parentExists: boolean,
+    parent: string
+  ): Promise<{ data: Category[]; total: number }> {
     const skip = (page - 1) * perPage;
     const sortOrder = order === 'asc' ? 1 : -1;
-
+  
+    // Build the filter based on parentExists and parent independently
+    const filter: Record<string, unknown> = {};
+    if (parentExists) {
+      filter.parent = { $eq: null };
+    }
+    if (parent) {
+      filter.parent = parent;
+    }
+  
     try {
       const [data, total] = await Promise.all([
         this.categoryModel
-          .find()
+          .find(filter)
           .sort({ [sort]: sortOrder })
           .skip(skip)
           .limit(perPage)
           .populate({
             path: 'children',
-            model: 'Category', // Ensure the model name matches your Category schema
+            model: 'Category', 
           })
           .exec(),
-        this.categoryModel.countDocuments().exec(),
+        this.categoryModel.countDocuments(filter).exec(),
       ]);
-
+  
       return { data, total };
     } catch (error) {
       throw new InternalServerErrorException('Failed to retrieve categories');
     }
   }
+  
 
   async findOne(id: string): Promise<Category> {
     this.validateObjectId(id, 'Category ID');

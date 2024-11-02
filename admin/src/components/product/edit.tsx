@@ -12,7 +12,7 @@ export default () => (
       >
         <General />
       </FormTab>
-      <FormTab
+      {/* <FormTab
         label="Details"
         path="details"
         width={400}
@@ -30,7 +30,7 @@ export default () => (
         path="chart"
       >
         <Chart />
-      </FormTab>
+      </FormTab> */}
     </TabbedForm>
   </Edit>
 )

@@ -15,12 +15,11 @@ export class BrandService {
   constructor(@InjectModel(Brand.name) private brandModel: Model<Brand>) {}
 
   async create(createBrandDto: CreateBrandDto): Promise<Brand> {
-    const newBrand = new this.brandModel(createBrandDto);
-
     try {
+      const newBrand = new this.brandModel(createBrandDto);
       return await newBrand.save();
     } catch (error) {
-      throw new InternalServerErrorException('Failed to create brand');
+      throw new InternalServerErrorException('Failed to create brand', error.message);
     }
   }
 

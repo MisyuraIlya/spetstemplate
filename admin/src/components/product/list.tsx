@@ -29,19 +29,18 @@ export default () => (
     sort={{field: 'position', order: 'ASC'}}
   >
     <Datagrid>
-      <ImageField />
+      {/* <ImageField /> */}
       <TextField source="title" />
-      <TextField source="sku" />
-      <TextField source="stock" />
-      <TextField source="purchasePrice" label="Price" />
-      <TextField source="totalSale" label="Total" />
+      {/* <TextField source="stock" /> */}
+      {/* <TextField source="purchasePrice" label="Price" /> */}
+      {/* <TextField source="totalSale" label="Total" /> */}
       <ReferenceField label="category" source="category" reference="categories">
-        <TextField source="name" />
+        <TextField source="title" />
       </ReferenceField>
       <ReferenceField label="Brand" source="brand" reference="brands">
-        <TextField source="name" />
+        <TextField source="title" />
       </ReferenceField>
-      <BooleanField source="hidden" />
+      {/* <BooleanField source="hidden" /> */}
       <EditButton />
     </Datagrid>
   </List>

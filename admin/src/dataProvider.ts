@@ -5,14 +5,14 @@ const resourceMap = {
   users: 'http://myapp.local/api/auth',
   categories: 'http://myapp.local/api/catalog',
   products: 'http://myapp.local/api/catalog',
-  // Add additional resources here as needed
+  brands: 'http://myapp.local/api/catalog',
 };
 
 const httpClient = fetchUtils.fetchJson;
 
 const dataProvider: DataProvider = {
+  
   getList: async (resource, params) => {
-    console.log('resource',resource)
     const apiUrl = (resourceMap[resource as keyof typeof resourceMap] || '/api') as string;
     const page = params.pagination?.page || 1;
     const perPage = params.pagination?.perPage || 10;
@@ -23,13 +23,13 @@ const dataProvider: DataProvider = {
       perPage,
       sort: field,
       order,
+      ...params.filter
     };
     const url = `${apiUrl}/${resource}?${stringify(query)}`;
-
-    const { headers, json } = await httpClient(url);
+    const { json } = await httpClient(url);
     return {
-      data: json.data,
-      total: json.total,
+      data: json.data || [],
+      total: json.total || 0,
     };
   },
 
@@ -38,11 +38,12 @@ const dataProvider: DataProvider = {
     const url = `${apiUrl}/${resource}/${params.id}`;
     const { json } = await httpClient(url);
     return {
-      data: json.data,
+      data: json || { id: params.id }, 
     };
   },
 
   getMany: async (resource, params) => {
+    console.log('resource, params',resource, params)
     const apiUrl = (resourceMap[resource as keyof typeof resourceMap] || '/api') as string;
     const query = {
       filter: JSON.stringify({ id: params.ids }),
@@ -50,7 +51,7 @@ const dataProvider: DataProvider = {
     const url = `${apiUrl}/${resource}?${stringify(query)}`;
     const { json } = await httpClient(url);
     return {
-      data: json.data,
+      data: json.data || [],
     };
   },
 
@@ -66,10 +67,10 @@ const dataProvider: DataProvider = {
       [params.target]: params.id,
     };
     const url = `${apiUrl}/${resource}?${stringify(query)}`;
-    const { headers, json } = await httpClient(url);
+    const { json } = await httpClient(url);
     return {
-      data: json.data,
-      total: json.total,
+      data: json.data || [],
+      total: json.total || 0,
     };
   },
 
@@ -82,7 +83,7 @@ const dataProvider: DataProvider = {
     };
     const { json } = await httpClient(url, options);
     return {
-      data: json.data,
+      data: json.data || { id: params.id },
     };
   },
 
@@ -96,7 +97,7 @@ const dataProvider: DataProvider = {
         })
       )
     );
-    return { data: responses.map(({ json }) => json.data.id) };
+    return { data: responses.map(({ json }) => json.data?.id || null) };
   },
 
   create: async (resource, params) => {
@@ -108,7 +109,7 @@ const dataProvider: DataProvider = {
     };
     const { json } = await httpClient(url, options);
     return {
-      data: json.data,
+      data: json.data || { ...params.data, id: json.id || Math.random().toString(36) }, 
     };
   },
 
@@ -122,7 +123,7 @@ const dataProvider: DataProvider = {
     return { data: { id: params.id } as RecordType };
   },
 
-  deleteMany: async <RecordType extends RaRecord = any>(resource: string, params: { ids: Identifier[] }) => {
+  deleteMany: async (resource: string, params: { ids: Identifier[] }) => {
     const apiUrl = (resourceMap[resource as keyof typeof resourceMap] || '/api') as string;
     const responses = await Promise.all(
       params.ids.map(id =>
@@ -133,6 +134,7 @@ const dataProvider: DataProvider = {
     );
     return { data: params.ids };
   },
+
 };
 
 export default dataProvider;

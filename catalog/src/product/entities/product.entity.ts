@@ -18,7 +18,16 @@ export class Product extends Document {
   description: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Category', required: true })
-  category: Types.ObjectId; 
+  category: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'Brand'})
+  brand: Types.ObjectId;
+
+  @Prop({ type: Boolean, default: false })
+  isPublished: boolean;
+
+  @Prop({ required: true, unique: true })
+  sku: string;  
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

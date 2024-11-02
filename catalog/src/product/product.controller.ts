@@ -17,9 +17,11 @@ export class ProductController {
     @Query('page') page: number = 1,
     @Query('perPage') perPage: number = 10,
     @Query('sort') sort: string = 'name',
-    @Query('order') order: string = 'asc'
+    @Query('order') order: string = 'asc',
+    @Query('category') category: string ,
+    @Query('childCategory') childCategory: string,
   ) {
-    return this.productService.findAll(page, perPage, sort, order);
+    return this.productService.findAll(page, perPage, sort, order,category,childCategory);
   }
 
   @Get(':id')

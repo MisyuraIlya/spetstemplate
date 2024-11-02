@@ -3,10 +3,9 @@ import StoreIcon from '@mui/icons-material/Store';
 import React from 'react';
 
 interface ICategory {
-  id: number,
+  id: string,
   children: ICategory[],
-  name: string,
-  position: number
+  title: string,
 }
 
 const CategoryFilter: React.FC = () => {
@@ -19,18 +18,18 @@ const CategoryFilter: React.FC = () => {
       meta: {useEmbedded: true}
     }
   );
-
+  console.log('categories',categories)
   if (isLoading) return null
   return(
     <FilterList label="Category" icon={<StoreIcon/>}>
       {categories?.map((category, index) => {
         return(
           <React.Fragment key={category.id}>
-            <FilterListItem label={category.name} value={{category: category.id}} />
+            <FilterListItem label={category.title} value={{category: category.id}} />
             {category.children.map((childCategory, i) => (
                 <FilterListItem
                   key={childCategory.id}
-                  label={childCategory.name}
+                  label={childCategory.title}
                   value={{childCategory: childCategory.id}}
                   sx={{
                     '& .MuiTypography-root': {

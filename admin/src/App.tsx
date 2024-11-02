@@ -7,6 +7,7 @@ import dataProvider from "./dataProvider";
 import user from "./components/user";
 import category from "./components/category";
 import product from "./components/product";
+import brand from "./components/brand";
 export const App = () => (
   <Admin
     layout={Layout}
@@ -15,6 +16,7 @@ export const App = () => (
   >
         <Resource name="users" {...user} />
         <Resource name="categories" {...category} />
+        <Resource name="brands"  {...brand} />
         <Resource name="products" {...product} />
   </Admin>
 );

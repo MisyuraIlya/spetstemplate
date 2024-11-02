@@ -2,7 +2,7 @@ import {List, TextField, EditButton, Datagrid} from "react-admin";
 
 export default () => (
   <List
-  filter={{ 'parentExists': true }}
+    sort={{field: 'position', order: 'ASC'}}
   >
     <Datagrid>
       <TextField source="title" />
