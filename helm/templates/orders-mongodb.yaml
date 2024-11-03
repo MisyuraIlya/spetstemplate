@@ -1,52 +1,52 @@
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: {{ .Release.Name }}-orders-mongodb
-#   namespace: {{ .Release.Namespace }}
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: orders-mongodb
-#   template:
-#     metadata:
-#       labels:
-#         app: orders-mongodb
-#     spec:
-#       containers:
-#         - name: mongodb
-#           image: "{{ .Values.mongodb.orders.image.repository }}:{{ .Values.mongodb.orders.image.tag }}"
-#           ports:
-#             - containerPort: {{ .Values.mongodb.orders.service.port }}
-#           volumeMounts:
-#             - name: mongodb-storage
-#               mountPath: /data/db
-#       volumes:
-#         - name: mongodb-storage
-#           persistentVolumeClaim:
-#             claimName: {{ .Release.Name }}-orders-mongodb-pvc
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: {{ .Release.Name }}-orders-mongodb
-#   namespace: {{ .Release.Namespace }}
-# spec:
-#   type: {{ .Values.mongodb.orders.service.type }}
-#   ports:
-#     - port: {{ .Values.mongodb.orders.service.port }}
-#       targetPort: {{ .Values.mongodb.orders.service.port }}
-#   selector:
-#     app: orders-mongodb
-# ---
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: {{ .Release.Name }}-orders-mongodb-pvc
-#   namespace: {{ .Release.Namespace }}
-# spec:
-#   accessModes:
-#     - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: {{ .Values.mongodb.orders.persistence.size }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-orders-mongodb
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-mongodb
+  template:
+    metadata:
+      labels:
+        app: orders-mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: "{{ .Values.mongodb.orders.image.repository }}:{{ .Values.mongodb.orders.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.mongodb.orders.service.port }}
+          volumeMounts:
+            - name: mongodb-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongodb-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-orders-mongodb-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-orders-mongodb
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: {{ .Values.mongodb.orders.service.type }}
+  ports:
+    - port: {{ .Values.mongodb.orders.service.port }}
+      targetPort: {{ .Values.mongodb.orders.service.port }}
+  selector:
+    app: orders-mongodb
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-orders-mongodb-pvc
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.mongodb.orders.persistence.size }}

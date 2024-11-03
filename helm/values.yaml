@@ -95,8 +95,9 @@ orders:
     port: 3000
     targetPort: 3000
   env:
-    MONGODB_URI: "mongodb://{{ .Release.Name }}-orders-mongodb:27017/ordersdb"
-
+    NATS_URL: "nats://app-nats:4222"
+    JWT_SECRET: "$spetsar$"
+    
 # prices service configuration
 prices:
   image:

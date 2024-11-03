@@ -9,10 +9,14 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { ProductPublisher } from './events/publisher/product.publisher';
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectModel(Product.name) private productModel: Model<Product>) {}
+  constructor(
+    @InjectModel(Product.name) private productModel: Model<Product>,
+    private readonly ProductPublisher: ProductPublisher
+  ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     this.validateObjectId(createProductDto.category, 'Category ID');
@@ -29,9 +33,13 @@ export class ProductService {
     });
   
     try {
-      return await newProduct.save();
+      const data =  await newProduct.save();
+      if(data){
+        await this.ProductPublisher.publishCreated(createProductDto);
+      }
+      return data
     } catch (error) {
-      console.error('Error creating product:', error);  // Log detailed error
+      console.error('Error creating product:', error);  
       throw new InternalServerErrorException('Failed to create product');
     }
   }
@@ -41,22 +49,23 @@ export class ProductService {
     perPage: number,
     sort: string,
     order: string,
-    category: string,
-    childCategory: string
+    category: string | null,
+    childCategory: string | null
   ): Promise<{ data: Product[]; total: number }> {
     const skip = (page - 1) * perPage;
     const sortOrder = order === 'asc' ? 1 : -1;
     const filter: Record<string, any> = {};
   
-    // Add category filter if provided
     if (category) {
-      filter['category'] = category;
+      filter.category = new Types.ObjectId(category);
     }
   
-    // Add childCategory filter if provided
-    if (childCategory) {
-      filter['childCategory'] = childCategory;
-    }
+    // if (childCategory) {
+    //   const childCategoryIds = await this.categoryModel
+    //     .find({ parent: category })
+    //     .distinct('_id');
+    //   filter.category = { $in: childCategoryIds };
+    // }
   
     try {
       const [data, total] = await Promise.all([
@@ -108,6 +117,10 @@ export class ProductService {
     const updatedProduct = await this.productModel
       .findByIdAndUpdate(id, updateData, { new: true })
       .exec();
+
+    if(updatedProduct){
+      await this.ProductPublisher.publishUpdated(updateProductDto);
+    }
 
     if (!updatedProduct) {
       throw new NotFoundException(`Product with ID ${id} not found`);

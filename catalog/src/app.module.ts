@@ -6,22 +6,11 @@ import { MongooseProvider } from './mongoose.provider';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { BrandModule } from './brand/brand.module';
+import { NatsClientModule } from './shared/nats-client.module';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: 'NATS_SERVICE',
-        transport: Transport.NATS,
-        options: {
-          servers: [process.env.NATS_URL ],
-          timeout: 5000,
-          reconnectAttempts: 5,
-          reconnectTimeWait: 1000,
-          waitOnFirstConnect: true, 
-        }
-      },
-    ]),
+    NatsClientModule,
     MongooseProvider,
     CategoryModule,
     ProductModule,
