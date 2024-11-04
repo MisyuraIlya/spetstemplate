@@ -35,7 +35,7 @@ export class ProductService {
     try {
       const data =  await newProduct.save();
       if(data){
-        await this.ProductPublisher.publishCreated(createProductDto);
+        await this.ProductPublisher.publishCreated(data);
       }
       return data
     } catch (error) {
@@ -136,6 +136,7 @@ export class ProductService {
     if (!result) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
+    await this.ProductPublisher.publishRemoved({id});
 
     return { message: 'Product successfully deleted' };
   }
